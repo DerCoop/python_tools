@@ -65,7 +65,13 @@ def print_track_info(gpx):
 
 
 def gawril():
-    pass
+    opts = get_cli_options()
+
+    gpx_fd = gpxpy.parse(opts.input_file)
+    opts.input_file.close()
+
+    print_track_info(gpx_fd)
+
 
 
 if __name__ == '__main__':

@@ -57,9 +57,11 @@ def split_track(origin, segments=None):
     pass
 
 
-def print_track_info():
-    """an interface to 'gpxinfo' from gppxpy"""
-    pass
+def print_track_info(gpx):
+    """an interface to 'gpxinfo' from gpxpy"""
+    from lib.gpxinfo import print_gpx_info
+
+    print_gpx_info(gpx)
 
 
 def gawril():

@@ -11,6 +11,7 @@ for my training
 
 __author__ = 'DerCoop'
 
+import gpxpy
 
 
 def get_cli_options():
@@ -54,7 +55,23 @@ def split_track(origin, segments=None):
     :return
         segmented - the segmented gpx object
     """
-    pass
+    segmented = gpxpy.gpx.GPX()
+
+    for track in origin.tracks:
+        # Create track in the segmented GPX object:
+        gpx_track = gpxpy.gpx.GPXTrack()
+        segmented.tracks.append(gpx_track)
+        for segment in track.segments:
+            # Create segment in the GPX track:
+            gpx_segment = gpxpy.gpx.GPXTrackSegment()
+            gpx_track.segments.append(gpx_segment)
+
+            # sorted?
+            for point in segment.points:
+                # Create points:
+                gpx_segment.points.append(point)
+
+    return segmented
 
 
 def print_track_info(gpx):

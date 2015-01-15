@@ -1,4 +1,4 @@
-#/usr/bin/env python
+#!/usr/bin/env python
 
 """gawril is a smart tool to manipulate gpx files
 

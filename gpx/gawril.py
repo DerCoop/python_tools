@@ -27,6 +27,20 @@ def get_cli_options():
                         help='use only 2 dimensions')
 
 
+    # TODO
+    todo_config = parser.add_argument_group(title='ToDo',
+                                            description='this arguments are not '
+                                                        'completely implemented')
+    todo_config.add_argument('-O', '--store-output', action='store', type=argparse.FileType('w'),
+                             help='the name of the file where the output should be stored')
+    todo_config.add_argument('-L', '--loglevel', action='store', default='warning',
+                        choices=['critical', 'error', 'warning', 'info', 'debug', 'notset'],
+                        help='set your loglevel, default = warning')
+    todo_config.add_argument('-v', '--verbose', action='store_true',
+                        help='print verbose')
+
+    return parser.parse_args()
+
 
 def split_track(origin, segments=None):
     """split the track into segments, returns a new gpx object

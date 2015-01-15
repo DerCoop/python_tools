@@ -26,14 +26,19 @@ def get_cli_options():
     parser.add_argument('-2', '--2D', action='store_true',
                         help='use only 2 dimensions')
 
-def split_track(segments):
-    """split the track into segments
 
-    segments - segment string
+
+def split_track(origin, segments=None):
+    """split the track into segments, returns a new gpx object
+
+    :segments - segment string
         segment: <type>:<value>
         type:   d - distance
                 t - time
         value: integer value, for distance in meter, time in seconds
+
+    :return
+        segmented - the segmented gpx object
     """
     pass
 

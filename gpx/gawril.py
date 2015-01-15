@@ -76,7 +76,7 @@ def split_track(origin, segments=None):
 
 def print_track_info(gpx):
     """an interface to 'gpxinfo' from gpxpy"""
-    from lib.gpxinfo import print_gpx_info
+    from gawril.gpxinfo import print_gpx_info
 
     print_gpx_info(gpx)
 

@@ -13,6 +13,14 @@ __author__ = 'DerCoop'
 
 import gpxpy
 import collections
+import sys
+
+try:
+    import gpxpy
+except ImportError as e:
+    print('Import Error (%s)' % e)
+    print('try "sudo pip install gpxpy" to install gpxpy')
+    sys.exit(1)
 
 
 FilterData = collections.namedtuple(

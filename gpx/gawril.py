@@ -87,8 +87,16 @@ def gawril():
     gpx_fd = gpxpy.parse(opts.input_file)
     opts.input_file.close()
 
-    print_track_info(gpx_fd)
+    segmented = split_track(gpx_fd)
 
+    if opts.verbose:
+        print_track_info(gpx_fd)
+        print_track_info(segmented)
+
+    if opts.store_output:
+        print('write output to "%s"' % opts.store_output.name)
+        opts.store_output.write(segmented.to_xml())
+        opts.store_output.close()
 
 
 if __name__ == '__main__':

@@ -12,6 +12,42 @@ for my training
 __author__ = 'DerCoop'
 
 import gpxpy
+import collections
+
+
+FilterData = collections.namedtuple(
+    'FilterData',
+    ('type', 'value'))
+
+
+class SegmentFilter:
+    def __init__(self, filterstrings):
+        self.filter = []
+        self.parse_filterstring(filterstrings)
+
+    def parse_filterstring(self, filterstrings):
+        """splits the filter string
+            1 - split the comma separated list into single filterstrings (one string for each filter)
+            2 - split each filterstring (type:value - pair) into type and value and store it in a collection list
+            """
+        if not filterstrings:
+            return
+        for filterstring in filterstrings.split(','):
+            try:
+                f_type, value = filterstring.split(':')
+            except ValueError as e:
+                # ignore invalid filters
+                # TODO print a warning
+                pass
+            else:
+                self.filter.append(FilterData(f_type, value))
+
+    def get_next_filter(self):
+        """returns the filter from the front of the list and remove it from list, None if the list is empty"""
+        try:
+            return self.filter.pop(0)
+        except IndexError as e:
+            return None
 
 
 def get_cli_options():
@@ -43,7 +79,7 @@ def get_cli_options():
     return parser.parse_args()
 
 
-def split_track(origin, segments=None):
+def split_track(origin, segments=None, filters=None):
     """split the track into segments, returns a new gpx object
 
     :segments - segment string
@@ -85,7 +121,9 @@ def gawril(opts):
     gpx_fd = gpxpy.parse(opts.input_file)
     opts.input_file.close()
 
-    segmented = split_track(gpx_fd)
+    filters = SegmentFilter(opts.segments)
+
+    segmented = split_track(gpx_fd, filters)
 
     if opts.verbose:
         print_track_info(gpx_fd)

@@ -97,15 +97,13 @@ def split_track(origin, segments=None, filters=None):
         # Create track in the segmented GPX object:
         gpx_track = gpxpy.gpx.GPXTrack()
         segmented.tracks.append(gpx_track)
-        for segment in track.segments:
-            # Create segment in the GPX track:
-            gpx_segment = gpxpy.gpx.GPXTrackSegment()
-            gpx_track.segments.append(gpx_segment)
-
-            # sorted?
-            for point in segment.points:
-                # Create points:
-                gpx_segment.points.append(point)
+        # Create segment in the GPX track:
+        gpx_segment = gpxpy.gpx.GPXTrackSegment()
+        gpx_track.segments.append(gpx_segment)
+        # get all points from the origin track, sorted
+        # format: [trkpt:51.333190918,12.3977632523@-151.0@2015-01-12 17:42:53]
+        for point in origin.walk(only_points=True):
+            gpx_segment.points.append(point)
 
     return segmented
 

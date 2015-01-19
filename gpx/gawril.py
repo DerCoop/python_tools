@@ -119,6 +119,22 @@ class SegmentFilter:
             return None
 
 
+def time_difference(point1, point2):
+    import gpxpy.utils as mod_utils
+    time_1 = point1.GPXTrackPoint.time
+    time_2 = point2.GPXTrackPoint.time
+
+    if time_1 == time_2:
+        return 0
+
+    if time_1 > time_2:
+        delta = time_1 - time_2
+    else:
+        delta = time_2 - time_1
+
+    return mod_utils.total_seconds(delta)
+
+
 def get_cli_options():
     """returns a pair (values, args) of the command line options"""
     import argparse

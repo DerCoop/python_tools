@@ -218,7 +218,18 @@ def gawril(opts):
         opts.store_output.close()
 
 
+def gawril_test(opts):
+    track = Track(opts.input_file)
+    filters = SegmentFilter(opts.segments)
+
+    track.convert_tp_to_list()
+    #track.print_track()
+    track.segment(filters)
+
+
 if __name__ == '__main__':
     opts = get_cli_options()
 
-    gawril(opts)
+    # can't use both because both use the same input filehandle
+    #gawril(opts)
+    gawril_test(opts)

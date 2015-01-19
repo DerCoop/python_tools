@@ -20,6 +20,75 @@ FilterData = collections.namedtuple(
     ('type', 'value'))
 
 
+class Track:
+    def __init__(self, input_fd):
+        self.origin = gpxpy.parse(input_fd)
+        input_fd.close()
+        self.orig_points = []
+
+    def convert_tp_to_list(self):
+        """converts all points of the track to a list, do not take care of the segments etc"""
+        for point in self.origin.walk(only_points=True):
+            self.orig_points.append(point)
+
+    def get_next_segment(self, filtertype, filtervalue):
+        """document me"""
+        import sys
+        previous_point = self.get_next_point()
+        point = self.get_next_point()
+        time_from_start = 0
+
+        if not point:
+            print 'not enough points available'
+            sys.exit(1)
+        print point
+        if filtertype == 't':
+            while time_from_start <= filtervalue:
+                time_from_start += time_difference(previous_point, point)
+                print point
+                previous_point = point
+                point = self.get_next_point()
+
+    def segment(self, filters):
+        # give only one filter to operate on
+        """split the track into different segments"""
+        next_filter = filters.get_next_filter()
+        while next_filter:
+            self.get_next_segment(next_filter.type, next_filter.value)
+            next_filter = filters.get_next_filter()
+
+            """if previous_point: # and point_no > 0:
+                if distance_2d:
+                    distance = point.distance_2d(previous_point)
+                else:
+                    distance = point.distance_3d(previous_point)
+
+                distance_from_start += distance
+                time_from_start += point.time_difference(previous_point)
+            else:
+                starting_point = point
+
+
+            #points.append(PointData(point, distance_from_start, track_no, segment_no, point_no))
+
+            print 'Point at ({0},{1}) -> {2}, {3} at {4}m {5}s'.format(point.latitude, point.longitude,
+                                                          point.elevation, point.time,
+                                                          distance_from_start, time_from_start)
+            previous_point = point
+"""
+        # TODO add the rest of the file to one last segment
+
+    def get_next_point(self):
+        try:
+            return self.orig_points.pop(0)
+        except IndexError as e:
+            return None
+
+    def print_track(self):
+        for point in self.orig_points:
+            print point
+
+
 class SegmentFilter:
     def __init__(self, filterstrings):
         self.filter = []

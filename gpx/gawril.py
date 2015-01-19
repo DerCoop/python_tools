@@ -240,4 +240,10 @@ if __name__ == '__main__':
 
     # can't use both because both use the same input filehandle
     #gawril(opts)
-    gawril_test(opts)
+    #gawril_test(opts)
+    if opts.segments:
+        print opts.segments
+        filter = SegmentFilter(opts.segments)
+        filter.print_filter()
+
+

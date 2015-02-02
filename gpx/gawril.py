@@ -28,8 +28,61 @@ FilterData = collections.namedtuple(
     ('type', 'value'))
 
 
+class Gawril(object):
+    """main class for gavril"""
+    def __init__(self, source_fd):
+        self.origin = gpxpy.parse(source_fd)
+        source_fd.close()
+
+    def print_track(self, track=None):
+        """print information of the origin track, an interface to 'gpxinfo' from gpxpy"""
+        from gawril.gpxinfo import print_gpx_info
+
+        if not track:
+            print_gpx_info(self.origin)
+        else:
+            print_gpx_info(track)
+
+    def split_track(self, segments=None, filters=None):
+        """split the track into segments, returns a new gpx object
+
+        :param segments: - segment string
+            segment: <type>:<value>
+            type:   d - distance
+                    t - time
+            value: integer value, for distance in meter, time in seconds
+
+        :return:
+            segmented - the segmented gpx object
+        """
+        # create a list of segments
+        segmented_gpx = gpxpy.gpx.GPX()
+        # Create track in the segmented GPX object:
+        gpx_track = gpxpy.gpx.GPXTrack()
+        segmented_gpx.tracks.append(gpx_track)
+
+        dist_diff = 0
+        time_diff = 0
+        previous_point = None
+
+        flt = filters.get_next_filter()
+        print(flt)
+        gpx_segment = gpxpy.gpx.GPXTrackSegment()
+        gpx_track.segments.append(gpx_segment)
+        for point in self.origin.walk(only_points=True):
+            if previous_point:
+                time_diff += point.time_difference(previous_point)
+                dist_diff += point.distance_2d(previous_point)
+            if not check_filter(dist_diff, time_diff, flt):
+                flt = filters.get_next_filter()
+                gpx_segment = gpxpy.gpx.GPXTrackSegment()
+                gpx_track.segments.append(gpx_segment)
+                dist_diff = 0
+                time_diff = 0
+            gpx_segment.points.append(point)
             previous_point = point
 
+        return segmented_gpx
 
 
 def check_filter(dist_diff, time_diff, flt):
@@ -104,16 +157,15 @@ def get_cli_options():
 
 
 def gawril(opts):
-    gpx_fd = gpxpy.parse(opts.input_file)
-    opts.input_file.close()
+    trk = Gawril(opts.input_file)
 
     filters = SegmentFilter(opts.segments)
 
-    segmented = split_track(gpx_fd, filters)
+    segmented = trk.split_track(filters=filters)
 
     if opts.verbose:
-        print_track_info(gpx_fd)
-        print_track_info(segmented)
+        trk.print_track()
+        trk.print_track(segmented)
 
     if opts.store_output:
         print('write output to "%s"' % opts.store_output.name)
@@ -124,4 +176,5 @@ def gawril(opts):
 if __name__ == '__main__':
     opts = get_cli_options()
 
+    gawril(opts)
 

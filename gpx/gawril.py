@@ -39,9 +39,12 @@ class Gawril(object):
         from gawril.gpxinfo import print_gpx_info
 
         if not track:
-            print_gpx_info(self.origin)
-        else:
+            track = self.origin
+
+        try:
             print_gpx_info(track)
+        except ZeroDivisionError:
+            print('no trackpoint found, maybe the wrong format or a route')
 
     def split_track(self, segments=None, filters=None):
         """split the track into segments, returns a new gpx object
@@ -66,7 +69,6 @@ class Gawril(object):
         previous_point = None
 
         flt = filters.get_next_filter()
-        print(flt)
         gpx_segment = gpxpy.gpx.GPXTrackSegment()
         gpx_track.segments.append(gpx_segment)
         for point in self.origin.walk(only_points=True):
@@ -91,7 +93,7 @@ def check_filter(dist_diff, time_diff, flt):
     if not flt:
         return True
     if flt.type == 't' and int(time_diff) <= int(flt.value):
-            return True
+        return True
     if flt.type == 'd' and int(dist_diff) <= int(flt.value):
         return True
     return False
@@ -174,7 +176,7 @@ def gawril(opts):
     segmented = trk.split_track(filters=filters)
 
     if opts.verbose:
-        trk.print_track()
+        #trk.print_track()
         trk.print_track(segmented)
 
     if opts.store_output:

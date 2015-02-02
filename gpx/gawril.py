@@ -99,14 +99,20 @@ def check_filter(dist_diff, time_diff, flt):
 
 class SegmentFilter:
     def __init__(self, filterstrings):
-        self.filter = []
+        self.filter = list()
         self.parse_filterstring(filterstrings)
 
     def parse_filterstring(self, filterstrings):
         """splits the filter string
             1 - split the comma separated list into single filterstrings (one string for each filter)
-            2 - split each filterstring (type:value - pair) into type and value and store it in a collection list
-            """
+            2 - split each filterstring (type:value - pair)
+                    into type and value and store it in a collection list
+
+            TODO add doctest
+
+        :param filterstrings:
+            the filterstring to split into (filtertype, value)
+        """
         if not filterstrings:
             return
         for filterstring in filterstrings.split(','):
@@ -120,7 +126,11 @@ class SegmentFilter:
                 self.filter.append(FilterData(f_type, value))
 
     def get_next_filter(self):
-        """returns the filter from the front of the list and remove it from list, None if the list is empty"""
+        """returns the filter from the front of the list and remove it from list
+
+        :return:
+            the next filter Tuple(type, value), None if the list is empty
+        """
         try:
             return self.filter.pop(0)
         except IndexError as e:
@@ -178,3 +188,5 @@ if __name__ == '__main__':
 
     gawril(opts)
 
+# TODO add some tests with the testtracks (do not use only my own/local tracks,
+# use skiing tracks or TransX)

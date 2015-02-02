@@ -11,7 +11,6 @@ for my training
 
 __author__ = 'DerCoop'
 
-import gpxpy
 import collections
 import sys
 
@@ -26,9 +25,6 @@ except ImportError as e:
 FilterData = collections.namedtuple(
     'FilterData',
     ('type', 'value'))
-
-
-
 
 
             previous_point = point
@@ -66,22 +62,6 @@ class SegmentFilter:
             return None
 
 
-def time_difference(point1, point2):
-    import gpxpy.utils as mod_utils
-    time_1 = point1.GPXTrackPoint.time
-    time_2 = point2.GPXTrackPoint.time
-
-    if time_1 == time_2:
-        return 0
-
-    if time_1 > time_2:
-        delta = time_1 - time_2
-    else:
-        delta = time_2 - time_1
-
-    return mod_utils.total_seconds(delta)
-
-
 def get_cli_options():
     """returns a pair (values, args) of the command line options"""
     import argparse
@@ -111,42 +91,6 @@ def get_cli_options():
     return parser.parse_args()
 
 
-def split_track(origin, segments=None, filters=None):
-    """split the track into segments, returns a new gpx object
-
-    :segments - segment string
-        segment: <type>:<value>
-        type:   d - distance
-                t - time
-        value: integer value, for distance in meter, time in seconds
-
-    :return
-        segmented - the segmented gpx object
-    """
-    segmented = gpxpy.gpx.GPX()
-
-    for track in origin.tracks:
-        # Create track in the segmented GPX object:
-        gpx_track = gpxpy.gpx.GPXTrack()
-        segmented.tracks.append(gpx_track)
-        # Create segment in the GPX track:
-        gpx_segment = gpxpy.gpx.GPXTrackSegment()
-        gpx_track.segments.append(gpx_segment)
-        # get all points from the origin track, sorted
-        # format: [trkpt:51.333190918,12.3977632523@-151.0@2015-01-12 17:42:53]
-        for point in origin.walk(only_points=True):
-            gpx_segment.points.append(point)
-
-    return segmented
-
-
-def print_track_info(gpx):
-    """an interface to 'gpxinfo' from gpxpy"""
-    from gawril.gpxinfo import print_gpx_info
-
-    print_gpx_info(gpx)
-
-
 def gawril(opts):
     gpx_fd = gpxpy.parse(opts.input_file)
     opts.input_file.close()
@@ -165,24 +109,7 @@ def gawril(opts):
         opts.store_output.close()
 
 
-def gawril_test(opts):
-    track = Track(opts.input_file)
-    filters = SegmentFilter(opts.segments)
-
-    track.convert_tp_to_list()
-    #track.print_track()
-    track.segment(filters)
-
-
 if __name__ == '__main__':
     opts = get_cli_options()
-
-    # can't use both because both use the same input filehandle
-    #gawril(opts)
-    #gawril_test(opts)
-    if opts.segments:
-        print opts.segments
-        filter = SegmentFilter(opts.segments)
-        filter.print_filter()
 
 

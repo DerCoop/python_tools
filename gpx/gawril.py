@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 """gawril is a smart tool to manipulate gpx files
 

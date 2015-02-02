@@ -32,6 +32,17 @@ FilterData = collections.namedtuple(
 
 
 
+def check_filter(dist_diff, time_diff, flt):
+    """check if the filter limit is exceeded"""
+    # TODO make it dict
+    if not flt:
+        return True
+    if flt.type == 't' and int(time_diff) <= int(flt.value):
+            return True
+    if flt.type == 'd' and int(dist_diff) <= int(flt.value):
+        return True
+    return False
+
 
 class SegmentFilter:
     def __init__(self, filterstrings):

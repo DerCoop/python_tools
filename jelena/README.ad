@@ -1,0 +1,100 @@
+= Jelena
+Der Coop <dercoop@users.sourceforge.net>
+:toc:
+:toclevels: 3
+:icons:
+:numbered:
+
+This document describes how to use Jelena, the PCAP diff tool
+
+== Motivation
+
+A tool to compare PCAP traces. It is usable as it is (from the commandline) and also as python lib.
+
+== Description
+
+Jelena compares two (or more) PCAP traces.
+
+== HowTo
+
+Show the help at the commandline:
+
+[source, shell]
+-----------------------------------------------------
+$ ./jelena.py --help
+usage: jelena [-h] [-O OUTPUT_FILE] [-F [FILTER [FILTER ...]]] [-v]
+                 input_file input_file
+
+Jelena - a tool to compare PCAP traces
+
+positional arguments:
+  input_file            the name of the input files to compare (2!)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -O OUTPUT_FILE, --output-file OUTPUT_FILE
+                        store the diff at a new pcap file
+  -F [FILTER [FILTER ...]], --filter [FILTER [FILTER ...]]
+                        filter options, possible choices are: src, src-ip,
+                        src-mac, dst-ip, mac, seq-ack, ip-id
+  -v, --verbose         print verbose
+-----------------------------------------------------
+
+=== Arguments
+
+input_file:
+
+* the name of the input files to compare
+* it must be two or more files (currently exact 2)
+
+-h, --help:
+
+* show the help message and exit
+
+-O OUTPUT_FILE, --output-file OUTPUT_FILE:
+
+* store the diff at a new pcap file
+
+-F [FILTER [FILTER ...]], --filter [FILTER [FILTER ...]]:
+
+* filter options
+* possible choices are:
+** src
+*** same as" -F src-ip src-mac"
+** src-ip
+*** ignore the source ip field of the pcap files
+** src-mac
+*** ignore the source mac field of the pcap files
+** dst
+*** same as" -F dst-ip dst-mac"
+** dst-ip
+*** ignore the destination ip field of the pcap files
+** src-mac
+*** ignore the destination mac field of the pcap files
+** mac
+*** same as" -F src-mac dst-mac"
+** ip
+*** same as" -F src-ip dst-ip"
+** ip-id
+*** ignore the ip-id field (id) of the pcap files
+*** ignores also the IP chksum
+** seq-ack
+*** ignore the sequence and acknowledge field of the pcap files
+** ttl
+*** ignore the time to live field (ttl) of the pcap files
+** chksum
+*** ignore all checksum fields (chksum) of the pcap files
+** all
+*** enables all filter
+
+-v, --verbose:
+
+* print verbose
+
+
+=== Compare two trace files
+
+[source, shell]
+-----------------------------------------------------
+./jelena.py trace1.pcap trace2.pcap
+-----------------------------------------------------

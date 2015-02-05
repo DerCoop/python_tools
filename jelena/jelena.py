@@ -29,9 +29,6 @@ def get_cli_options():
     parser.add_argument('-L', '--loglevel', action='store', default='warning',
                         choices=['critical', 'error', 'warning', 'info', 'debug', 'notset'],
                         help='set your loglevel, default = warning')
-    # TODO use the loglevel instead
-    parser.add_argument('-v', '--verbose', action='store_true',
-                        help='print verbose')
 
     # TODO
     todo_config = parser.add_argument_group(title='ToDo',
@@ -89,17 +86,15 @@ def main():
 
             if not found_packet:
                 diff_packets.append(packet)
-                if args.verbose:
-                    log.info('<<< %s' % packet.summary())
+                log.debug('<<< %s' % packet.summary())
 
     # from right
     for dump in dumps:
         if len(dump) > 0:
             diff_packets.extend(dump.values())
 
-            if args.verbose:
-                for packet in dump.values():
-                    log.info('>>> %s' % packet.summary())
+            for packet in dump.values():
+                log.debug('>>> %s' % packet.summary())
 
     log.debug('Found %s different packets' % str(len(diff_packets)))
 

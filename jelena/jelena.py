@@ -6,8 +6,10 @@ Written by Der Coop <dercoop@users.sourceforge.net>
 
 """
 
+import sys
 import logging as log
 import argparse
+from scapy.all import wrpcap
 
 
 def get_cli_options():
@@ -46,6 +48,8 @@ def main():
 
     this function is only needed for stand alone usage
     """
+    from lib.jelena import Jelena
+
     args = get_cli_options()
 
     formatstring = '[%(levelname)s]: jelena: %(message)s'
@@ -57,11 +61,56 @@ def main():
     # Parse pcap files
     dumps = []
 
+    for input_file in args.input_file:
+        trace = Jelena(args.filter)
+        dumps.append(trace.read_dump(input_file))
+
     # Diff the dumps
     diff_packets = []
+    expected = dumps.pop(0)
 
     # from left
     # pkgs are not sorted (input order)
+    for serial_packet, packet in expected.items():
+        found_packet = False
+
+        # for now we have only 2 files
+        if args.keep_order:
+            for dump in dumps:
+                # XXX: with more than two files, ensure the right order of the files
+                dump.pop(last=False)
+
+        else:
+            for dump in dumps:
+                # TODO: go packet for packet through the dump
+                if dump.get(serial_packet):
+                    del dump[serial_packet]
+                    found_packet = True
+
+            if not found_packet:
+                diff_packets.append(packet)
+                if args.verbose:
+                    log.info('<<< %s' % packet.summary())
+
+    # from right
+    for dump in dumps:
+        if len(dump) > 0:
+            diff_packets.extend(dump.values())
+
+            if args.verbose:
+                for packet in dump.values():
+                    log.info('>>> %s' % packet.summary())
+
+    log.debug('Found %s different packets' % str(len(diff_packets)))
+
+    # Write pcap diff file?
+    output_file = args.output_file
+
+    if diff_packets:
+        if output_file:
+            log.info('write diff to file (%s)' % str(output_file))
+            wrpcap(output_file, diff_packets)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
